@@ -1,10 +1,11 @@
 ﻿# 功夫交易系统部署
 -------------------
 ## 1.需要的离线安装包
-> boost_1_62_0.7z
-> cmake-3.11.0-rc4.tar.gz
-> log4cplus-2.0.0-rc2.zip
-> rfoo
+* boost_1_62_0.7z
+* cmake-3.11.0-rc4.tar.gz
+* log4cplus-2.0.0-rc2.zip
+* rfoo
+
 ## 2.安装必要文件
 ### （1）安装cmake
 #### 　　　(a)依次执行以下命令：
