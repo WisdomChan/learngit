@@ -1,4 +1,4 @@
-# 功夫交易系统部署
+﻿# 功夫交易系统部署
 -------------------
 ## 1.需要的离线安装包
 > boost_1_62_0.7z
@@ -17,7 +17,7 @@
            vim ~/.bashrc
            在最后一行添上：
            export PATH=/usr/local/bin:$PATH
-       export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 ### （2）安装boost
 #### 　　　依次执行以下命令：
           7za x boost_1_62_0.7z
@@ -56,8 +56,8 @@
           vim cmake_install.cmake
           将第41行内容
           file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/boost" TYPE DIRECTORY FILES "/opt/kungfu/toolchain/boost-1.62.0/lib/")
-      修改为：
-      file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/boost" TYPE DIRECTORY FILES "/usr/local/lib/")
+          修改为：
+          file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/boost" TYPE DIRECTORY FILES "/usr/local/lib/")
 #### 　　　(c)执行以下命令：
           make
 #### 　　　(d)修改CPackConfig.cmake
