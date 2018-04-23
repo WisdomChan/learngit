@@ -1,25 +1,12 @@
-﻿# 功夫交易系统部署
+# CTP国内期货行情收集程序部署
 -------------------
 ## 1.需要的离线安装包
 * boost_1_62_0.7z
-* cmake-3.11.0-rc4.tar.gz
-* log4cplus-2.0.0-rc2.zip
-* rfoo
+* protobuf-2.5.0.tar.gz
+* zeromq-4.2.3.tar.gz
 
 ## 2.安装必要文件
-### （1）安装cmake
-#### 　　　(a)依次执行以下命令：
-          tar xvf cmake-3.11.0-rc4.tar.gz
-          cd cmake-3.11.0-rc4
-          ./configure
-          make
-          make install
-#### 　　　(b)修改PATH环境变量
-           vim ~/.bashrc
-           在最后一行添上：
-           export PATH=/usr/local/bin:$PATH
-           export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-### （2）安装boost
+### （1）安装boost
 #### 　　　依次执行以下命令：
           7za x boost_1_62_0.7z
           cd boost_1_62_0
@@ -27,51 +14,54 @@
           ./b2 toolset=gcc
           ./b2 install
           ldconfig –v
-### （3）安装log4cplus
+
+### （2）安装google protobuf
 #### 　　　依次执行以下命令：
-          unzip log4cplus-2.0.0-rc2.zip
-          cd log4cplus-2.0.0-rc2
+          tar –xvf protobuf-2.5.0.tar.gz
+          cd protobuf-2.5.0
           ./configure
           make
+          make check
           make install
-### （4）安装rfoo
+          ldconfig
+
+### （3）安装zeromq
 #### 　　　依次执行以下命令：
-          cd rfoo
-          python setup.py install
-### （5）安装pid
-#### 　　　执行以下命令：
-          pip install pid
-### （6）安装supervisor
-#### 　　　执行以下命令：
-          pip install supervisor
-## 3.编译与安装功夫交易系统
-### （1）获取代码
-          git clone https://github.com/zrdfsinvest/kungfu.git
-### （2）编译
-#### 　　　(a)依次执行以下命令：
-          cd kungfu
-          mkdir build
-          cd build
-          cmake ..
-#### 　　　(b)修改cmake_install.cmake
-          vim cmake_install.cmake
-          将第41行内容
-          file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/boost" TYPE DIRECTORY FILES "/opt/kungfu/toolchain/boost-1.62.0/lib/")
-          修改为：
-          file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/boost" TYPE DIRECTORY FILES "/usr/local/lib/")
-#### 　　　(c)执行以下命令：
+          tar –xvf zeromq-4.2.3.tar.gz
+          cd zeromq-4.2.3
+          ./autogen.sh
+          ./configure
           make
-#### 　　　(d)修改CPackConfig.cmake
-          vim CPackConfig.cmake
-          将67行内容
-          set(CPACK_RPM_PACKAGE_REQUIRES "rfoo >= 1.3.1, pid >= 2.1.1, log4cplus2 == 2.0.0_RC1, supervisor >= 3.1.0")
-          修改为：
-          #set(CPACK_RPM_PACKAGE_REQUIRES "rfoo >= 1.3.1, pid >= 2.1.1, log4cplus2 == 2.0.0_RC1, supervisor >= 3.1.0")
-### （3）生成安装包并安装
-#### 　　　依次执行以下命令：
-          make package
-          rpm -ivh kungfu-0.0.5-Linux.rpm
-## 4.测试是否成功安装功夫交易系统
-#### 　　　依次执行以下命令：
-          sudo systemctl start kungfu
-          kungfuctl
+          make check
+          make install
+          ldconfig
+
+### （4）编译CTP国内期货行情收集程序
+          cd ctpfuture
+          mkdir allinst
+          make
+
+### （5）修改getinstruments.sh
+#### 　　　修改ctp_future_recv_sender路径
+        /home/zhibin/livetrading/backoffice/recvquotes/ctpfuture/ctp_future_recv_sender t
+        
+### （6）修改getinstruments.sh
+#### 　　　修改ctp_future_recv_sender路径
+        /home/zhibin/livetrading/backoffice/recvquotes/ctpfuture/ctp_future_recv_sender
+
+### （7）修改crontab
+#### 　　　向crontab添加以下语句（注意修改路径）
+          46 08 * * 1-5 cd /home/zhibin/livetrading/backoffice/recvquotes/ctpfuture/ && ./getinstruments.sh
+          48 08 * * 1-5 cd /home/zhibin/livetrading/backoffice/recvquotes/ctpfuture/ && ./recvquotes.sh
+          30 15 * * * kill -9 `pgrep recvquotes`
+          30 15 * * * kill -9 `pgrep ctp_future_recv`
+          46 20 * * 1-5 cd /home/zhibin/livetrading/backoffice/recvquotes/ctpfuture/ && ./getinstruments.sh
+          48 20 * * 1-5 cd /home/zhibin/livetrading/backoffice/recvquotes/ctpfuture/ && ./recvquotes.sh
+          30 3 * * * kill -9 `pgrep recvquotes`
+          30 3 * * * kill -9 `pgrep ctp_future_recv`
+
+## 3.行情收集保存路径
+### （1）现在保存路径
+          /mnt/hdd1/F/tickdata/recvquotes/
+### （2）修改保存路径
+          修改commonlibs/cpp/config/recvquotes.ini中的PATH来达到修改保存路径的目的
